@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discord Bot Panel</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+        }
+        .info {
+            margin-bottom: 20px;
+        }
+        .info p {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Discord Bot Information</h1>
+        <div id="botInfo" class="info">
+            <p><strong>ID:</strong> <span id="botId"></span></p>
+            <p><strong>Username:</strong> <span id="botUsername"></span></p>
+            <p><strong>Tag:</strong> <span id="botTag"></span></p>
+            <p><strong>Status:</strong> <span id="botStatus"></span></p>
+            <p><strong>Uptime:</strong> <span id="botUptime"></span></p>
+            <p><strong>Created At:</strong> <span id="botCreatedAt"></span></p>
+            <p><strong>Command Count:</strong> <span id="botCommandCount"></span></p>
+        </div>
+    </div>
+    <script>
+        async function fetchBotInfo() {
+            try {
+                const response = await fetch('/bot-info');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                const data = await response.json();
+                console.log('Fetched data:', data); // Debug log
+
+                document.getElementById('botId').innerText = data.id;
+                document.getElementById('botUsername').innerText = data.username;
+                document.getElementById('botTag').innerText = data.tag;
+                document.getElementById('botStatus').innerText = data.status;
+                document.getElementById('botUptime').innerText = formatUptime(data.uptime);
+                document.getElementById('botCreatedAt').innerText = data.createdAt;
+                document.getElementById('botCommandCount').innerText = data.commandCount;
+            } catch (error) {
+                console.error('Error fetching bot info:', error);
+            }
+        }
+
+        function formatUptime(uptime) {
+            const totalSeconds = Math.floor(uptime / 1000);
+            const hours = Math.floor(totalSeconds / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            const seconds = totalSeconds % 60;
+            return `${hours}h ${minutes}m ${seconds}s`;
+        }
+
+        // Fetch bot information periodically every 60 seconds
+        setInterval(fetchBotInfo, 30000);
+
+        // Fetch bot information when the page loads
+        fetchBotInfo();
+    </script>
+</body>
+</html>
